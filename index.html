@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#080a0f">
   <title>Core Digger - Realistic Subterranean Mining</title>
   <style>
     :root {
@@ -681,6 +684,360 @@
       display: flex;
     }
 
+
+    /* --- MOBILE RESPONSIVE UI & ON-SCREEN TOUCH CONTROLS --- */
+    .mobile-top-bar {
+      display: none;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 25;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .mobile-panel-toggle-btn {
+      background: rgba(14, 18, 26, 0.92);
+      border: 1.5px solid var(--hazard-yellow);
+      color: var(--hazard-yellow);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.76rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      touch-action: manipulation;
+    }
+
+    .mobile-panel-toggle-btn.pulse-alert {
+      animation: pulseBaseBtn 1.2s infinite alternate;
+    }
+
+    @keyframes pulseBaseBtn {
+      0% { box-shadow: 0 0 8px rgba(250, 204, 21, 0.4); border-color: var(--hazard-yellow); }
+      100% { box-shadow: 0 0 22px rgba(250, 204, 21, 0.95); border-color: #ffffff; }
+    }
+
+    .mobile-close-panel-btn {
+      display: none;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--accent-danger);
+      color: #fca5a5;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.75rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: all 0.15s ease;
+    }
+
+    .mobile-close-panel-btn:hover, .mobile-close-panel-btn:active {
+      background: #ef4444;
+      color: #ffffff;
+    }
+
+    /* Mobile Backdrop */
+    .mobile-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 998;
+      transition: opacity 0.25s ease;
+    }
+
+    .mobile-backdrop.active {
+      display: block;
+    }
+
+    /* Touch Controls Layer */
+    .touch-controls-layer {
+      display: none;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 30;
+      touch-action: none;
+    }
+
+    /* Virtual D-Pad (Bottom-Left) */
+    .touch-dpad {
+      position: absolute;
+      bottom: 16px;
+      left: 14px;
+      width: 148px;
+      height: 148px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 5px;
+      pointer-events: auto;
+      touch-action: none;
+    }
+
+    .dpad-btn {
+      background: rgba(14, 18, 26, 0.78);
+      border: 1.5px solid rgba(56, 189, 248, 0.35);
+      color: var(--text-main);
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: background 0.08s, transform 0.08s, border-color 0.08s;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    }
+
+    .dpad-btn:active, .dpad-btn.active {
+      background: rgba(56, 189, 248, 0.4);
+      border-color: var(--accent-energy);
+      transform: scale(0.92);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.65);
+    }
+
+    .dpad-up {
+      grid-column: 2;
+      grid-row: 1;
+      border-top-left-radius: 14px;
+      border-top-right-radius: 14px;
+      border-color: rgba(250, 204, 21, 0.5);
+      color: var(--hazard-yellow);
+    }
+    .dpad-up:active, .dpad-up.active {
+      background: rgba(250, 204, 21, 0.35);
+      border-color: var(--hazard-yellow);
+      box-shadow: 0 0 18px rgba(250, 204, 21, 0.75);
+    }
+
+    .dpad-left {
+      grid-column: 1;
+      grid-row: 2;
+      border-top-left-radius: 14px;
+      border-bottom-left-radius: 14px;
+    }
+
+    .dpad-center {
+      grid-column: 2;
+      grid-row: 2;
+      background: rgba(4, 8, 16, 0.65);
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+    }
+
+    .dpad-right {
+      grid-column: 3;
+      grid-row: 2;
+      border-top-right-radius: 14px;
+      border-bottom-right-radius: 14px;
+    }
+
+    .dpad-down {
+      grid-column: 2;
+      grid-row: 3;
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+    }
+
+    .dpad-icon {
+      font-size: 1.18rem;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .dpad-sub {
+      font-size: 0.52rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+      opacity: 0.85;
+    }
+
+    /* Action Cluster (Bottom-Right) */
+    .touch-actions {
+      position: absolute;
+      bottom: 16px;
+      right: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      pointer-events: auto;
+      touch-action: none;
+    }
+
+    .touch-btn {
+      touch-action: none;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      transition: all 0.1s ease;
+    }
+
+    .touch-btn:active, .touch-btn.active {
+      transform: scale(0.92);
+    }
+
+    .touch-btn-interact {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      background: rgba(14, 18, 26, 0.88);
+      border: 2px solid rgba(255, 255, 255, 0.28);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .touch-btn-interact .action-icon {
+      font-size: 1.45rem;
+      line-height: 1;
+    }
+
+    .touch-btn-interact .action-label {
+      font-size: 0.62rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .touch-btn-interact.highlight-interact {
+      border-color: var(--hazard-yellow);
+      background: rgba(250, 204, 21, 0.22);
+      color: var(--hazard-yellow);
+      box-shadow: 0 0 24px rgba(250, 204, 21, 0.7);
+      animation: pulseInteractBtn 1s infinite alternate;
+    }
+
+    @keyframes pulseInteractBtn {
+      0% { transform: scale(1); box-shadow: 0 0 14px rgba(250, 204, 21, 0.5); }
+      100% { transform: scale(1.06); box-shadow: 0 0 26px rgba(250, 204, 21, 0.9); }
+    }
+
+    .touch-util-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .touch-btn-util {
+      width: 52px;
+      height: 50px;
+      border-radius: 10px;
+      background: rgba(14, 18, 26, 0.78);
+      border: 1.5px solid var(--border-panel);
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .touch-btn-util .util-sub {
+      font-size: 0.52rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      margin-top: 1px;
+    }
+
+    /* Screen Queries */
+    @media (max-width: 900px), (pointer: coarse) {
+      body {
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      #excavation-container {
+        width: 100vw !important;
+        height: 100vh !important;
+        border-right: none;
+      }
+
+      /* Mobile Drawer / Slide-Over Surface Panel */
+      #surface-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        max-width: 440px;
+        height: 100%;
+        z-index: 1000;
+        transform: translateX(100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: -15px 0 45px rgba(0, 0, 0, 0.92);
+      }
+
+      #surface-panel.mobile-open {
+        transform: translateX(0);
+      }
+
+      .mobile-close-panel-btn {
+        display: flex !important;
+      }
+
+      .mobile-top-bar {
+        display: flex !important;
+      }
+
+      .touch-controls-layer {
+        display: flex !important;
+      }
+
+      .hud-controls-hint {
+        display: none !important;
+      }
+
+      .hud-overlay {
+        top: 10px;
+        left: 10px;
+        gap: 5px;
+      }
+
+      .hud-gauge {
+        padding: 4px 9px;
+        font-size: 0.72rem;
+      }
+
+      .abilities-hud {
+        bottom: 172px !important;
+        left: 14px !important;
+        gap: 6px !important;
+      }
+
+      .ability-card {
+        min-width: 82px !important;
+        padding: 4px 6px !important;
+      }
+
+      .ability-name {
+        font-size: 0.62rem !important;
+      }
+
+      .sound-toggle-btn {
+        top: 12px !important;
+        right: 140px !important;
+        padding: 6px 9px !important;
+        font-size: 0.72rem !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -714,6 +1071,14 @@
     <button class="sound-toggle-btn active" id="btn-sound-toggle" title="Toggle Synthesized Audio">
       <span id="sound-icon">🔊</span> SOUND ON
     </button>
+
+    <!-- Mobile Top Bar Floating Base Drawer Button -->
+    <div class="mobile-top-bar">
+      <button class="mobile-panel-toggle-btn" id="btn-toggle-mobile-panel" title="Open Surface Base & Equipment">
+        <span class="panel-toggle-icon">🎒</span>
+        <span id="mobile-cargo-pill">BASE / CARGO</span>
+      </button>
+    </div>
 
     <!-- Controls Banner -->
     <div class="hud-controls-hint">
@@ -770,16 +1135,60 @@
       <span id="toast-icon">⚡</span>
       <span id="toast-text">Message</span>
     </div>
+
+    <!-- Mobile On-Screen Touch Controls (Virtual Gamepad) -->
+    <div class="touch-controls-layer" id="touch-controls-layer">
+      <!-- Virtual D-Pad (Bottom-Left) -->
+      <div class="touch-dpad" id="touch-dpad">
+        <button class="dpad-btn dpad-up" id="btn-touch-up" data-dir="up" aria-label="Jetpack Up">
+          <span class="dpad-icon">▲</span>
+          <span class="dpad-sub">THRUST</span>
+        </button>
+        <button class="dpad-btn dpad-left" id="btn-touch-left" data-dir="left" aria-label="Move Left">
+          <span class="dpad-icon">◀</span>
+        </button>
+        <div class="dpad-center"></div>
+        <button class="dpad-btn dpad-right" id="btn-touch-right" data-dir="right" aria-label="Move Right">
+          <span class="dpad-icon">▶</span>
+        </button>
+        <button class="dpad-btn dpad-down" id="btn-touch-down" data-dir="down" aria-label="Drill Down">
+          <span class="dpad-icon">▼</span>
+          <span class="dpad-sub">DRILL</span>
+        </button>
+      </div>
+
+      <!-- Action Cluster (Bottom-Right) -->
+      <div class="touch-actions" id="touch-actions">
+        <!-- Interact Button [E] (large, glowing near stations) -->
+        <button class="touch-btn touch-btn-interact" id="btn-touch-interact" aria-label="Interact Station">
+          <span class="action-icon" id="touch-interact-icon">⚡</span>
+          <span class="action-label" id="touch-interact-label">[E] USE</span>
+        </button>
+
+        <!-- Utility Row: Light & Torch -->
+        <div class="touch-util-row">
+          <button class="touch-btn touch-btn-util" id="btn-touch-flashlight" aria-label="Toggle Flashlight">
+            <span>🔦</span>
+            <span class="util-sub">LIGHT</span>
+          </button>
+          <button class="touch-btn touch-btn-util" id="btn-touch-torch" aria-label="Deploy Flare / Torch">
+            <span>🔥</span>
+            <span class="util-sub" id="touch-torch-count">5/5</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Surface Base UI Panel (30%) -->
   <aside id="surface-panel">
     <!-- Header -->
-    <div class="panel-header">
+    <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
       <div class="panel-title">
         <span>CORE DIGGER</span>
         <span class="rig-badge">RIG MK-V</span>
       </div>
+      <button class="mobile-close-panel-btn" id="btn-close-mobile-panel" title="Close Panel and Return to Mine">✕ BACK TO MINE</button>
     </div>
 
     <!-- Navigation Tabs -->
@@ -1049,6 +1458,9 @@
       </div>
     </div>
   </aside>
+
+  <!-- Mobile Panel Dimmer Backdrop -->
+  <div class="mobile-backdrop" id="mobile-panel-backdrop"></div>
 
   <script>
     // --- SYNTHESIZED WEB AUDIO SYSTEM ---
@@ -1806,6 +2218,7 @@
         const engTab = document.getElementById('tab-engineering');
         if (engTab) engTab.classList.add('active');
         playSound('ore');
+        if (window.openMobilePanel) window.openMobilePanel();
         showToast('Merchant Trading Post Open! Ready to upgrade equipment.', '🏪');
         updateUI();
       } else {
@@ -2315,6 +2728,54 @@
       else energyFill.classList.remove('danger');
 
       btnReturnSurface.disabled = state.energy < 10 || state.player.y <= SURFACE_ROW;
+
+      // Mobile Top Bar & Dynamic Touch Controls
+      const mobileCargoPill = document.getElementById('mobile-cargo-pill');
+      const mobilePanelToggleBtn = document.getElementById('btn-toggle-mobile-panel');
+      if (mobileCargoPill) {
+        mobileCargoPill.textContent = `${totalRaw}/${state.maxCargo} CARGO`;
+      }
+
+      const touchInteractBtn = document.getElementById('btn-touch-interact');
+      const touchInteractIcon = document.getElementById('touch-interact-icon');
+      const touchInteractLabel = document.getElementById('touch-interact-label');
+      const touchTorchCount = document.getElementById('touch-torch-count');
+      if (touchTorchCount) {
+        touchTorchCount.textContent = `${state.torches.inventory}/${state.torches.max}`;
+      }
+
+      if (touchInteractBtn && touchInteractIcon && touchInteractLabel) {
+        if (state.nearStation === 'refuel') {
+          touchInteractBtn.classList.add('highlight-interact');
+          touchInteractIcon.textContent = '🔋';
+          touchInteractLabel.textContent = 'REFUEL';
+          if (mobilePanelToggleBtn) mobilePanelToggleBtn.classList.add('pulse-alert');
+        } else if (state.nearStation === 'smelter') {
+          touchInteractBtn.classList.add('highlight-interact');
+          touchInteractIcon.textContent = '🔥';
+          touchInteractLabel.textContent = 'SMELT';
+          if (mobilePanelToggleBtn) mobilePanelToggleBtn.classList.add('pulse-alert');
+        } else if (state.nearStation === 'merchant') {
+          touchInteractBtn.classList.add('highlight-interact');
+          touchInteractIcon.textContent = '🏪';
+          touchInteractLabel.textContent = 'SHOP';
+          if (mobilePanelToggleBtn) mobilePanelToggleBtn.classList.add('pulse-alert');
+        } else {
+          const playerCenterX = state.player.renderX + TILE_SIZE / 2;
+          const playerCenterY = state.player.renderY + TILE_SIZE / 2;
+          const nearTorch = state.torches.deployed.some(t => Math.hypot(t.x - playerCenterX, t.y - playerCenterY) < 38);
+          if (nearTorch) {
+            touchInteractBtn.classList.add('highlight-interact');
+            touchInteractIcon.textContent = '🔥';
+            touchInteractLabel.textContent = 'PICKUP';
+          } else {
+            touchInteractBtn.classList.remove('highlight-interact');
+            touchInteractIcon.textContent = '⚡';
+            touchInteractLabel.textContent = '[E] USE';
+            if (mobilePanelToggleBtn) mobilePanelToggleBtn.classList.remove('pulse-alert');
+          }
+        }
+      }
 
       // Cargo
       const totalRaw = getTotalRaw();
@@ -3639,6 +4100,143 @@
       canvas.width = rect.width;
       canvas.height = rect.height;
     }
+    
+    // --- TOUCH CONTROLS & MOBILE GESTURE SYSTEM ---
+    function setupTouchControls() {
+      const dpadUp = document.getElementById('btn-touch-up');
+      const dpadLeft = document.getElementById('btn-touch-left');
+      const dpadRight = document.getElementById('btn-touch-right');
+      const dpadDown = document.getElementById('btn-touch-down');
+
+      function bindRepeatButton(el, onAction, onRelease, keyName) {
+        if (!el) return;
+        let timer = null;
+
+        function start(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (soundEnabled) getAudioContext();
+          el.classList.add('active');
+          if (keyName) keys[keyName] = true;
+          onAction();
+          clearInterval(timer);
+          timer = setInterval(() => {
+            onAction();
+          }, 110);
+        }
+
+        function stop(e) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          el.classList.remove('active');
+          clearInterval(timer);
+          timer = null;
+          if (keyName) keys[keyName] = false;
+          if (onRelease) onRelease();
+        }
+
+        el.addEventListener('pointerdown', start);
+        el.addEventListener('pointerup', stop);
+        el.addEventListener('pointercancel', stop);
+        el.addEventListener('pointerleave', stop);
+        el.addEventListener('contextmenu', (e) => e.preventDefault());
+      }
+
+      bindRepeatButton(dpadUp, () => triggerThruster(), () => { state.player.isJetpacking = false; }, 'ArrowUp');
+      bindRepeatButton(dpadLeft, () => moveDigger(-1, 0), null, 'ArrowLeft');
+      bindRepeatButton(dpadRight, () => moveDigger(1, 0), null, 'ArrowRight');
+      bindRepeatButton(dpadDown, () => moveDigger(0, 1), null, 'ArrowDown');
+
+      const btnTouchInteract = document.getElementById('btn-touch-interact');
+      if (btnTouchInteract) {
+        btnTouchInteract.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (soundEnabled) getAudioContext();
+          handleInteract();
+        });
+      }
+
+      const btnTouchFlashlight = document.getElementById('btn-touch-flashlight');
+      if (btnTouchFlashlight) {
+        btnTouchFlashlight.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleFlashlight();
+        });
+      }
+
+      const btnTouchTorch = document.getElementById('btn-touch-torch');
+      if (btnTouchTorch) {
+        btnTouchTorch.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleTorchAction();
+        });
+      }
+
+      // Mobile Surface Panel Drawer Toggle
+      const surfacePanel = document.getElementById('surface-panel');
+      const mobileBackdrop = document.getElementById('mobile-panel-backdrop');
+      const btnToggleMobilePanel = document.getElementById('btn-toggle-mobile-panel');
+      const btnCloseMobilePanel = document.getElementById('btn-close-mobile-panel');
+
+      function openMobilePanel() {
+        if (surfacePanel) surfacePanel.classList.add('mobile-open');
+        if (mobileBackdrop) mobileBackdrop.classList.add('active');
+        handleResize();
+      }
+
+      function closeMobilePanel() {
+        if (surfacePanel) surfacePanel.classList.remove('mobile-open');
+        if (mobileBackdrop) mobileBackdrop.classList.remove('active');
+        handleResize();
+      }
+
+      if (btnToggleMobilePanel) {
+        btnToggleMobilePanel.addEventListener('click', () => {
+          if (surfacePanel.classList.contains('mobile-open')) {
+            closeMobilePanel();
+          } else {
+            openMobilePanel();
+          }
+        });
+      }
+
+      if (btnCloseMobilePanel) {
+        btnCloseMobilePanel.addEventListener('click', closeMobilePanel);
+      }
+
+      if (mobileBackdrop) {
+        mobileBackdrop.addEventListener('click', closeMobilePanel);
+      }
+
+      // Touch Aiming & Flashlight Control on Canvas
+      function handleCanvasTouch(e) {
+        if (!e.touches || e.touches.length === 0) return;
+        const t = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        state.flashlight.mouseX = t.clientX - rect.left;
+        state.flashlight.mouseY = t.clientY - rect.top;
+        state.flashlight.hasMouse = true;
+      }
+
+      canvas.addEventListener('touchstart', handleCanvasTouch, { passive: true });
+      canvas.addEventListener('touchmove', handleCanvasTouch, { passive: true });
+
+      // Unlock Audio Context on first touch
+      window.addEventListener('touchstart', () => {
+        if (soundEnabled) getAudioContext();
+      }, { once: true, passive: true });
+
+      window.openMobilePanel = openMobilePanel;
+      window.closeMobilePanel = closeMobilePanel;
+    }
+
+    setupTouchControls();
+
     window.addEventListener('resize', handleResize);
     handleResize();
 
