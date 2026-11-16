@@ -1,0 +1,20 @@
+{
+  "name": "core-digger",
+  "version": "1.0.0",
+  "description": "2D Canvas incremental subterranean mining game inspired by Motherload & Rock Bottom",
+  "main": "js/game.js",
+  "scripts": {
+    "test": "node --test test/**/*.test.js"
+  },
+  "keywords": [
+    "game",
+    "canvas",
+    "incremental",
+    "mining",
+    "vanilla-javascript",
+    "web-audio",
+    "motherload"
+  ],
+  "author": "Maksym Vashchyshyn",
+  "license": "MIT"
+}
